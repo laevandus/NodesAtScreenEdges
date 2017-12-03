@@ -3,87 +3,69 @@
 //  NodesAtScreenEdges
 //
 //  Created by Toomas Vahter on 03/12/2017.
-//  Copyright © 2017 Augmented Code. All rights reserved.
+//  Copyright © 2017 Augmented Code.
 //
 
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
-    
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
-    
-    override func didMove(to view: SKView) {
+final class GameScene: SKScene
+{
+    override func didMove(to view: SKView)
+    {
+        let nodeSize = CGSize(width: 100, height: 100)
+        let colors: [UIColor] = [.red, .green, .blue, .yellow]
+        let nodes = colors.map({ return SKSpriteNode(color: $0, size: nodeSize) })
+        let names = ["topLeft", "topRight", "bottomLeft", "bottomRight"]
         
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
-        
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
+        for (index, node) in nodes.enumerated()
+        {
+            node.name = names[index]
         }
         
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
+        nodes.forEach({ addChild($0) })
+        
+        layoutNodes()
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
+ 
+    private var initialSize: CGSize = .zero
+    private var presentedSize: CGSize { return scene?.view?.bounds.size ?? size }
+    private var presentedScaleFactor: CGFloat { return initialSize.width / presentedSize.width }
+    
+    override func sceneDidLoad()
+    {
+        super.sceneDidLoad()
+        initialSize = size
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
     
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    
-    override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
+    func layoutNodes()
+    {
+        let margin: CGFloat = 10
+        
+        if let topLeft = childNode(withName: "topLeft") as? SKSpriteNode
+        {
+            topLeft.position.x = -presentedSize.width / 2.0 * presentedScaleFactor + topLeft.size.width / 2.0 + margin
+            topLeft.position.y = presentedSize.height / 2.0 * presentedScaleFactor - topLeft.size.height / 2.0 - margin
+        }
+        
+        if let topRight = childNode(withName: "topRight") as? SKSpriteNode
+        {
+            topRight.position.x = presentedSize.width / 2.0 * presentedScaleFactor - topRight.size.width / 2.0 - margin
+            topRight.position.y = presentedSize.height / 2.0 * presentedScaleFactor - topRight.size.height / 2.0 - margin
+        }
+        
+        if let bottomLeft = childNode(withName: "bottomLeft") as? SKSpriteNode
+        {
+            bottomLeft.position.x = -presentedSize.width / 2.0 * presentedScaleFactor + bottomLeft.size.width / 2.0 + margin
+            bottomLeft.position.y = -presentedSize.height / 2.0 * presentedScaleFactor + bottomLeft.size.height / 2.0 + margin
+        }
+        
+        if let bottomRight = childNode(withName: "bottomRight") as? SKSpriteNode
+        {
+            bottomRight.position.x = presentedSize.width / 2.0 * presentedScaleFactor - bottomRight.size.width / 2.0 - margin
+            bottomRight.position.y = -presentedSize.height / 2.0 * presentedScaleFactor + bottomRight.size.height / 2.0 + margin
+        }
     }
 }

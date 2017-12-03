@@ -3,53 +3,44 @@
 //  NodesAtScreenEdges
 //
 //  Created by Toomas Vahter on 03/12/2017.
-//  Copyright © 2017 Augmented Code. All rights reserved.
+//  Copyright © 2017 Augmented Code.
 //
 
 import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController {
-
-    override func viewDidLoad() {
+final class GameViewController: UIViewController
+{
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
         
-        if let view = self.view as! SKView? {
-            // Load the SKScene from 'GameScene.sks'
-            if let scene = SKScene(fileNamed: "GameScene") {
-                // Set the scale mode to scale to fit the window
-                scene.scaleMode = .aspectFill
-                
-                // Present the scene
-                view.presentScene(scene)
-            }
-            
-            view.ignoresSiblingOrder = true
-            
-            view.showsFPS = true
-            view.showsNodeCount = true
-        }
+        guard let view = view as? SKView else { return }
+        guard let scene = SKScene(fileNamed: "GameScene") else { return }
+        scene.scaleMode = .aspectFill
+        view.presentScene(scene)
+        
+        view.ignoresSiblingOrder = true
+        view.showsFPS = true
+        view.showsNodeCount = true
+    }
+    
+    
+    override func viewDidLayoutSubviews()
+    {
+        super.viewDidLayoutSubviews()
+        
+        guard let scene = (view as? SKView)?.scene as? GameScene else { return }
+        scene.layoutNodes()
     }
 
-    override var shouldAutorotate: Bool {
-        return true
-    }
-
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
-        } else {
-            return .all
-        }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
-    }
-
-    override var prefersStatusBarHidden: Bool {
-        return true
+    
+    override var shouldAutorotate: Bool { return true }
+    override var prefersStatusBarHidden: Bool { return true }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask
+    {
+        return UIDevice.current.userInterfaceIdiom == .phone ? .allButUpsideDown : .all
     }
 }
