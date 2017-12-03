@@ -1,5 +1,3 @@
-#  SpriteKitGradientTexture
+#  NodesAtScreenEdges
 
-Demostrates how to implement radial and linear gradients in a SpriteKit game.
-
-Read more: [drawing-gradients-in-spritekit](https://augmentedcode.io/2017/11/12/drawing-gradients-in-spritekit/)
+Demostrates how to keep nodes at the edges of the screen when scene is scaled.
